@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Квантовые Компьютеры - Интерактивный Проект</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-purple: #bc13fe;
+            --neon-pink: #ff00ff;
+            --dark-bg: #050508;
+            --glass-bg: rgba(0, 243, 255, 0.05);
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Квантовый фон с частицами */
+        #quantum-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+        }
+
+        /* Заголовок */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .main-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 243, 255, 0.5);
+            animation: glow 3s ease-in-out infinite alternate;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.3rem;
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 8px;
+            opacity: 0.8;
+            text-shadow: 0 0 20px var(--neon-blue);
+        }
+
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 20px rgba(0, 243, 255, 0.6)); }
+            to { filter: drop-shadow(0 0 40px rgba(188, 19, 254, 0.8)); }
+        }
+
+        /* Сетка видео */
+        .videos-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Карточка видео */
+        .video-card {
+            background: var(--glass-bg);
+            border: 1px solid rgba(0, 243, 255, 0.3);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.1),
+                        inset 0 0 30px rgba(0, 243, 255, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple), var(--neon-pink));
+            border-radius: 20px;
+            opacity: 0;
+            z-index: -1;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 50px rgba(0, 243, 255, 0.3),
+                        0 0 100px rgba(188, 19, 254, 0.2);
+            border-color: var(--neon-blue);
+        }
+
+        .video-card:hover::before {
+            opacity: 0.3;
+        }
+
+        .video-number {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--neon-purple);
+            text-shadow: 0 0 20px var(--neon-purple);
+            opacity: 0.5;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #000;
+            border: 2px solid rgba(0, 243, 255, 0.2);
+            box-shadow: inset 0 0 20px rgba(0, 243, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .video-wrapper:hover {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.4),
+                        inset 0 0 20px rgba(0, 243, 255, 0.2);
+        }
+
+        .video-wrapper iframe,
+        .video-wrapper video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .video-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            margin: 15px 0 10px;
+            color: var(--neon-blue);
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+        }
+
+        .video-description {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        /* Счетчик просмотров */
+        .view-counter {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 243, 255, 0.1);
+            border: 1px solid var(--neon-blue);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .view-counter:hover {
+            box-shadow: 0 0 25px rgba(0, 243, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        .view-icon {
+            width: 16px;
+            height: 16px;
+            fill: var(--neon-blue);
+        }
+
+        /* Подпись разработчиков */
+        .developers {
+            text-align: center;
+            padding: 60px 20px;
+            margin-top: 40px;
+            background: linear-gradient(to top, rgba(0, 243, 255, 0.1), transparent);
+            position: relative;
+            z-index: 10;
+        }
+
+        .developers-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            color: var(--neon-pink);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px var(--neon-pink);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .developers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .dev-name {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 243, 255, 0.5);
+            position: relative;
+            padding: 10px 30px;
+            border: 2px solid transparent;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .dev-name:hover {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        .dev-class {
+            font-size: 1.3rem;
+            color: var(--neon-purple);
+            margin-top: 20px;
+            text-shadow: 0 0 15px var(--neon-purple);
+            letter-spacing: 3px;
+            font-weight: 500;
+        }
+
+        .quantum-line {
+            width: 200px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-blue), var(--neon-purple), var(--neon-pink), transparent);
+            margin: 30px auto;
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2rem;
+            }
+            
+            .videos-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .dev-name {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* Эффект сканирования */
+        .scan-line {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--neon-blue);
+            box-shadow: 0 0 10px var(--neon-blue);
+            animation: scan 8s linear infinite;
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0.3;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(-100vh); }
+            100% { transform: translateY(100vh); }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="quantum-canvas"></canvas>
+    <div class="scan-line"></div>
+
+    <header class="header">
+        <h1 class="main-title">Квантовые Компьютеры</h1>
+        <p class="subtitle">Интерактивный образовательный проект</p>
+    </header>
+
+    <main class="videos-container" id="videosGrid">
+        <!-- Видео будут добавлены через JavaScript -->
+    </main>
+
+    <footer class="developers">
+        <div class="quantum-line"></div>
+        <h2 class="developers-title">Выполнили</h2>
+        <div class="developers-list">
+            <div class="dev-name">Нурманбетова Салтанат</div>
+            <div class="dev-name">Степанова Арина</div>
+            <div class="dev-class">9 "А" класс</div>
+        </div>
+        <div class="quantum-line"></div>
+    </footer>
+
+    <script>
+        // ==========================================
+        // НАСТРОЙКИ ВИДЕО (ЗАПОЛНИТЕ СВОИМИ ССЫЛКАМИ)
+        // ==========================================
+        
+        const videosData = [
+            {
+                id: 1,
+                title: "Что такое кубит?",
+                description: "Бит vs Кубит на примере монеты",
+                // Замените на свою ссылку (YouTube embed или прямой путь к файлу)
+                url: "img/1.mp4", 
+                type: "local" // "youtube" или "local"
+            },
+            {
+                id: 2,
+                title: "Суперпозиция за 30 сек",
+                description: "Частица в двух состояниях сразу - объяснение суперпозиции",
+                url: "img/2.mp4",
+                type: "local"
+            },
+            {
+                id: 3,
+                title: "Квантовая запутанность",
+                description: "Связь частиц на расстоянии",
+                url: "img/3.mp4",
+                type: "local"
+            },
+            {
+                id: 4,
+                title: "Почему кванты быстрее?",
+                description: "Пример с книгами и коробками",
+                url: "img/4.mp4",
+                type: "local"
+            },
+            {
+                id: 5,
+                title: "Как работает квантовый код",
+                description: "Показываем наш эксперимент!",
+                url: "img/5.mp4",
+                type: "local"
+            },
+            {
+                id: 6,
+                title: "Где это используют?",
+                description: "Реальные примеры (лекарства, транспорт)",
+                url: "img/6.mp4",
+                type: "local"
+            },
+            {
+                id: 7,
+                title: "ИИ + Кванты = Будущее",
+                description: "Как они работают вместе!",
+                url: "img/7.mp4",
+                type: "local"
+            }
+        ];
+
+        // ==========================================
+        // СИСТЕМА СЧЕТЧИКА ПРОСМОТРОВ
+        // ==========================================
+        
+        class VideoViewCounter {
+            constructor() {
+                this.storageKey = 'quantum_video_views';
+                this.views = this.loadViews();
+            }
+
+            loadViews() {
+                const stored = localStorage.getItem(this.storageKey);
+                return stored ? JSON.parse(stored) : {};
+            }
+
+            saveViews() {
+                localStorage.setItem(this.storageKey, JSON.stringify(this.views));
+            }
+
+            incrementView(videoId) {
+                if (!this.views[videoId]) {
+                    this.views[videoId] = 0;
+                }
+                this.views[videoId]++;
+                this.saveViews();
+                return this.views[videoId];
+            }
+
+            getViewCount(videoId) {
+                return this.views[videoId] || 0;
+            }
+        }
+
+        const counter = new VideoViewCounter();
+
+        // ==========================================
+        // ГЕНЕРАЦИЯ ВИДЕО КАРТОЧЕК
+        // ==========================================
+        
+        function createVideoCard(video) {
+            const viewCount = counter.getViewCount(video.id);
+            
+            return `
+                <article class="video-card" data-video-id="${video.id}">
+                    <span class="video-number">0${video.id}</span>
+                    <div class="video-wrapper" onclick="playVideo(${video.id}, '${video.url}', '${video.type}')">
+                        ${video.type === 'youtube' 
+                            ? `<iframe src="${video.url}" allowfullscreen></iframe>`
+                            : `<video controls><source src="${video.url}" type="video/mp4"></video>`
+                        }
+                    </div>
+                    <h3 class="video-title">${video.title}</h3>
+                    <p class="video-description">${video.description}</p>
+                    <div class="view-counter" id="counter-${video.id}">
+                        <svg class="view-icon" viewBox="0 0 24 24">
+                            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                        </svg>
+                        <span>Просмотров: <strong>${viewCount}</strong></span>
+                    </div>
+                </article>
+            `;
+        }
+
+        function renderVideos() {
+            const grid = document.getElementById('videosGrid');
+            grid.innerHTML = videosData.map(video => createVideoCard(video)).join('');
+        }
+
+        function playVideo(id, url, type) {
+            // Увеличиваем счетчик
+            const newCount = counter.incrementView(id);
+            
+            // Обновляем отображение
+            const counterElement = document.getElementById(`counter-${id}`);
+            if (counterElement) {
+                counterElement.innerHTML = `
+                    <svg class="view-icon" viewBox="0 0 24 24">
+                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                    </svg>
+                    <span>Просмотров: <strong>${newCount}</strong></span>
+                `;
+                
+                // Анимация счетчика
+                counterElement.style.transform = 'scale(1.2)';
+                setTimeout(() => {
+                    counterElement.style.transform = 'scale(1)';
+                }, 200);
+            }
+
+            // Если это YouTube, можно открыть в новом окне для лучшего контроля
+            if (type === 'youtube') {
+                window.open(url, '_blank');
+            }
+        }
+
+        // ==========================================
+        // КВАНТОВЫЙ ФОН С ЧАСТИЦАМИ
+        // ==========================================
+        
+        const canvas = document.getElementById('quantum-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        let width, height;
+        let particles = [];
+        
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.size = Math.random() * 2 + 1;
+                this.color = Math.random() > 0.5 ? '#00f3ff' : '#bc13fe';
+                this.alpha = Math.random() * 0.5 + 0.2;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                
+                if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+                    this.reset();
+                }
+            }
+            
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        
+        function initParticles() {
+            particles = [];
+            const particleCount = Math.min(100, (width * height) / 15000);
+            for (let i = 0; i < particleCount; i++) {
+                particles.push(new Particle());
+            }
+        }
+        
+        function connectParticles() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance < 150) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = particles[i].color;
+                        ctx.globalAlpha = (1 - distance / 150) * 0.2;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+        
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+            
+            connectParticles();
+            requestAnimationFrame(animate);
+        }
+        
+        window.addEventListener('resize', () => {
+            resize();
+            initParticles();
+        });
+        
+        // ==========================================
+        // ИНИЦИАЛИЗАЦИЯ
+        // ==========================================
+        
+        resize();
+        initParticles();
+        animate();
+        renderVideos();
+        
+        // Эффект параллакса для мыши
+        document.addEventListener('mousemove', (e) => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            
+            document.body.style.background = `
+                radial-gradient(
+                    ellipse at ${x * 100}% ${y * 100}%, 
+                    rgba(0, 243, 255, 0.15) 0%, 
+                    rgba(188, 19, 254, 0.1) 50%, 
+                    #050508 100%
+                )
+            `;
+        });
+    </script>
+</body>
+</html>
